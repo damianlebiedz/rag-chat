@@ -27,9 +27,3 @@ COPY --from=builder /app /app
 
 RUN useradd -m appuser
 USER appuser
-
-EXPOSE 8501
-
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
-
-ENTRYPOINT ["streamlit", "run", "bot.py", "--server.port=8501", "--server.address=0.0.0.0"]

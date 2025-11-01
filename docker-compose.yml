@@ -11,7 +11,6 @@ services:
       - ./.ollama:/root/.ollama
 
   pull-model:
-    image: ai/pull-model:latest
     build:
       context: .
       dockerfile: containers/pull_model.Dockerfile
@@ -44,10 +43,10 @@ services:
     networks:
       - net
 
-  api:
+  app:
     build:
       context: .
-      dockerfile: containers/api.Dockerfile
+      dockerfile: base/app.Dockerfile
     env_file: .env
     environment:
       - DOCKER_ENV=true
@@ -55,19 +54,42 @@ services:
       - ./embedding_model:/app/embedding_model
     networks:
       - net
-    command: uvicorn api.api:app --host 0.0.0.0 --port 8504
-    ports:
-      - "8504:8504"
-    healthcheck:
-      test: [ "CMD", "curl", "--fail", "http://localhost:8504" ]
-      interval: 10s
-      timeout: 10s
-      retries: 5
     depends_on:
       database:
         condition: service_healthy
       pull-model:
         condition: service_completed_successfully
+    ports:
+      - "8503:8503"
+    command: streamlit run app.py --server.port=8503 --server.address=0.0.0.0
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:8503/_stcore/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  api:
+    build:
+      context: .
+      dockerfile: containers/base.Dockerfile
+    env_file: .env
+    environment:
+      - DOCKER_ENV=true
+    networks:
+      - net
+    depends_on:
+      database:
+        condition: service_healthy
+      pull-model:
+        condition: service_completed_successfully
+    ports:
+      - "8504:8504"
+    command: uvicorn api:app --host 0.0.0.0 --port 8504
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:8504" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   front-end:
     build:
@@ -88,7 +110,7 @@ services:
     networks:
       - net
     ports:
-      - 8505:8505
+      - "8505:8505"
 
 networks:
   net:

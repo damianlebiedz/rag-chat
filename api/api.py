@@ -1,20 +1,13 @@
-from fastapi import FastAPI, Depends
-from fastapi.middleware.cors import CORSMiddleware
-
 from config import LLM
-from llm_services.llm_chains import configure_qa_rag_chain, configure_llm_only_chain
+from llm_services.llm_chains import configure_llm_only_chain
 from .api_models import Question
 
-from langchain_neo4j import Neo4jGraph
-from dotenv import load_dotenv
-
 from fastapi import FastAPI, Depends
-from pydantic import BaseModel
-from langchain.callbacks.base import BaseCallbackHandler
 from queue import Queue
 from sse_starlette.sse import EventSourceResponse
 from fastapi.middleware.cors import CORSMiddleware
 import json
+import uvicorn
 
 from .api_utils import stream, QueueCallback
 
@@ -38,8 +31,6 @@ async def root():
 @app.get("/query-stream")
 def qstream(question: Question = Depends()):
     output_function = configure_llm_only_chain()
-    if question.rag:
-        output_function = configure_qa_rag_chain()
 
     q = Queue()
 
@@ -52,3 +43,12 @@ def qstream(question: Question = Depends()):
             yield json.dumps({"token": token})
 
     return EventSourceResponse(generate(), media_type="text/event-stream")
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "api:app",
+        host="0.0.0.0",
+        port=8504,
+        reload=True
+    )

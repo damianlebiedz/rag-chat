@@ -5,7 +5,6 @@
 !llm_services/**
 !utils/**
 !config.py
-!requirements.txt
 !pyproject.toml
 !poetry.lock
 !front-end/*
