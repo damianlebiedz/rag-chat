@@ -1,0 +1,12 @@
+*
+!api/
+!db_services/**
+!exceptions/**
+!llm_services/**
+!utils/**
+!config.py
+!requirements.txt
+!pyproject.toml
+!poetry.lock
+!front-end/*
+front-end/node_modules/*

@@ -1,0 +1,14 @@
+.idea
+.DS_Store
+__pycache__
+.venv
+.env
+
+data/*
+!data/.ignore
+
+embedding_model/*
+!embedding_model/.ignore
+
+.ollama/*
+!.ollama/.ignore

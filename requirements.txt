@@ -1,0 +1,13 @@
+fastapi~=0.115.14
+sse-starlette~=2.3.6
+uvicorn~=0.35.0
+langchain~=0.3.26
+langchain-core~=0.3.68
+langchain-community~=0.3.19
+langchain-ollama~=0.2.3
+langchain-huggingface~=0.1.2
+langchain-neo4j~=0.4.0
+neo4j~=5.28.1
+python-dotenv~=1.1.1
+pydantic~=2.11.7
+streamlit==1.32.1
