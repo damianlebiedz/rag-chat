@@ -1,7 +1,7 @@
 services:
 
   llm:
-    image: ollama/ollama:latest
+    image: ollama/ollama:0.12.9
     command: serve
     ports:
       - "11434:11434"
@@ -11,6 +11,7 @@ services:
       - ./.ollama:/root/.ollama
 
   pull-model:
+    image: rag-chat/pull-model:latest
     build:
       context: .
       dockerfile: containers/pull_model.Dockerfile
@@ -44,9 +45,10 @@ services:
       - net
 
   app:
+    image: rag-chat/base:latest
     build:
       context: .
-      dockerfile: base/app.Dockerfile
+      dockerfile: containers/base.Dockerfile
     env_file: .env
     environment:
       - DOCKER_ENV=true
@@ -69,9 +71,7 @@ services:
       retries: 3
 
   api:
-    build:
-      context: .
-      dockerfile: containers/base.Dockerfile
+    image: rag-chat/base:latest
     env_file: .env
     environment:
       - DOCKER_ENV=true
@@ -84,7 +84,7 @@ services:
         condition: service_completed_successfully
     ports:
       - "8504:8504"
-    command: uvicorn api:app --host 0.0.0.0 --port 8504
+    command: uvicorn api.api:app --host 0.0.0.0 --port 8504
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8504" ]
       interval: 30s
@@ -92,6 +92,7 @@ services:
       retries: 3
 
   front-end:
+    image: rag-chat/front-end:latest
     build:
       context: .
       dockerfile: containers/front-end.Dockerfile

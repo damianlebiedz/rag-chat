@@ -4,6 +4,7 @@
 !exceptions/**
 !llm_services/**
 !utils/**
+!app.py
 !config.py
 !pyproject.toml
 !poetry.lock
